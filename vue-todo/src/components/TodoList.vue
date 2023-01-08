@@ -1,14 +1,14 @@
 <template>
   <div>
     <transition-group name="list" tag="ul">
-      <li v-for="(todoItem, index) in propsdata" v-bind:key="todoItem.item" class="shadow">
+      <li v-for="(todoItem, index) in this.storedTodoItems" v-bind:key="todoItem.item" class="shadow">
         <i
           class="checkBtn fa-solid fa-check"
           v-bind:class="{ checkBtnCompleted: todoItem.completed }"
-          v-on:click="toggleComplete(todoItem, index)"
+          v-on:click="toggleComplete({ todoItem, index })"
         ></i>
         <span v-bind:class="{ textCompleted: todoItem.completed }">{{ todoItem.item }}</span>
-        <span class="removeBtn" v-on:click="removeTodo(todoItem, index)">
+        <span class="removeBtn" v-on:click="removeTodo({ todoItem, index })">
           <i class="fa-solid fa-trash-can"></i>
         </span>
       </li>
@@ -17,15 +17,24 @@
 </template>
 
 <script>
+import { mapGetters, mapMutations } from 'vuex';
+
 export default {
-  props: ['propsdata'],
   methods: {
-    removeTodo(todoItem, index) {
-      this.$emit('removeItem', todoItem, index);
-    },
-    toggleComplete(todoItem, index) {
-      this.$emit('toggleItem', todoItem, index);
-    },
+    ...mapMutations({
+      removeTodo: 'removeOneItem',
+      toggleComplete: 'toggleOneItem',
+    }),
+  },
+  computed: {
+    ...mapGetters({
+      storedTodoItems: 'getTodoItems',
+    }),
+    // ...mapGetters({
+    //   // 객체를 사용해야 될 때 -> [가져올 때 이름]과 [사용할 때 이름]이 다를 때
+    //   // 'store.js의 getters이름' : '해당 컴포넌트에서 사용할 이름'
+    //   todoItems: 'storedTodoItems',
+    // }),
   },
 };
 </script>
